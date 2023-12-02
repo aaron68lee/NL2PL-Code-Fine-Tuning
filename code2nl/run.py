@@ -362,9 +362,7 @@ def main():
         eval_flag = True
         for step in bar:
             batch = next(train_dataloader)
-            logger.info(f'Batch {global_step} loaded')
             batch = tuple(t.to(device) for t in batch)
-            logger.info(f'Batch moved to {device}')
             source_ids,source_mask,target_ids,target_mask = batch
             loss,_,_ = model(source_ids=source_ids,source_mask=source_mask,target_ids=target_ids,target_mask=target_mask)
             
