@@ -281,19 +281,20 @@ def main():
             encoder=encoder,
             decoder=decoder,
             config=config,
-            beam_size=10,
-            max_length=128,
+            beam_size=args.beam_size,
+            max_length=args.max_target_length,
             sos_id=tokenizer.cls_token_id,
             eos_id=tokenizer.sep_token_id,
         )
-
-        model.load_state_dict(
-            torch.load(
-                "pytorch_model.bin",
-                map_location=device,
-            ),
-            strict=False,
-        )
+        if args.load_model_path is not None:
+            logger.info("reload model from {}".format(args.load_model_path))
+            model.load_state_dict(
+                torch.load(
+                    args.load_model_path,
+                    map_location=device,
+                ),
+                strict=False,
+            )
         return model
 
     model = build_model(
@@ -514,7 +515,7 @@ def main():
             logger.info("Test file: {}".format(file))
             eval_examples = read_examples(file)
             logger.info(f'Number of examples: {len(eval_examples)}')
-            eval_examples = eval_examples[:256] # use only 256 for initial checking
+            # eval_examples = eval_examples[:256] # use only 256 for initial checking
             
             eval_features = convert_examples_to_features(eval_examples, tokenizer, args,stage='test')
             all_source_ids = torch.tensor([f.source_ids for f in eval_features], dtype=torch.long)
